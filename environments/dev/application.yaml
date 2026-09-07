@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nginx-dev
+  namespace: default
+spec:
+  project: default
+
+  sources:
+    - repoURL: https://github.com/itech0306/argocd-practice
+      targetRevision: main
+      path: nginx-helm
+      helm:
+        valueFiles:
+          - $values/environments/dev/values.yaml
+
+    - repoURL: https://github.com/itech0306/argocd-practice
+      targetRevision: main
+      ref: values
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd-dev
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
